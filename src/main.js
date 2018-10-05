@@ -10,6 +10,9 @@ import 'normalize.css/normalize.css'
 import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+import '@/styles/index.scss' // global css
+
+
 import './mock' 
 import './permission'
 

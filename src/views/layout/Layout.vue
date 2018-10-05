@@ -1,61 +1,138 @@
 <template>
-    <el-container class="container">
-        <el-aside width="200px" class="aside">Aside</el-aside>
-        <el-container>
-            <el-header class="header">
-                Header
-                <el-button type="primary" @click="logout">退出</el-button>
-            </el-header>
-            <el-main class="main">Main
-                <el-button type="primary" @click="getApi">获取数据</el-button>               
-            </el-main>
-            <el-footer class="footer">foot</el-footer>
-        </el-container>
-    </el-container>
+  <div :class="classObj" class="app-wrapper">
+    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+    <sidebar class="sidebar-container"/>
+    <div class="main-container">
+      <navbar/>      
+      <app-main/> 
+    </div>
+  </div>
 </template>
 <script>
-    import axios from "axios"
-    export default{
-        name:"Layout",
-        methods: {
-            logout() {
-                this.$store.dispatch('LogOut').then(() => {
-                    location.reload()// In order to re-instantiate the vue-router object to avoid bugs
-                })
-            },
-            getApi(){
-                axios.get('http://202.114.148.160/webapi/api/values')
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            }
-        }
+import { Navbar,Sidebar, AppMain } from './components'
+import axios from "axios";
+import ResizeMixin from './mixin/ResizeHandler'
+import esriLoader from 'esri-loader'
+
+export default {
+  name: "Layout",
+  components: {
+    Navbar,
+    Sidebar,
+    AppMain
+  },
+  mixins: [ResizeMixin],
+  data(){
+    return {
+      isCollapse: false,
     }
+  },
+  computed: {
+    sidebar() {
+      return this.$store.state.app.sidebar
+    },
+    device() {
+      return this.$store.state.app.device
+    },
+    classObj() {
+      return {
+        hideSidebar: !this.sidebar.opened,
+        openSidebar: this.sidebar.opened,
+        withoutAnimation: this.sidebar.withoutAnimation,
+        mobile: this.device === 'mobile'
+      }
+    }
+  },
+  mounted(){
+    const options = {
+      url: 'http://202.114.148.160/arcgis_js_api4.7/library/4.7/dojo/dojo.js'
+    };
+    esriLoader.loadModules(['esri/Map','esri/views/MapView'], options)
+    .then(([Map,MapView]) => {
+      let map = new Map({
+        basemap: 'dark-gray'
+      });
+
+      const view = new MapView({
+        map: map,
+        container: 'main',
+      })
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  }, 
+  methods: {
+    logout() {
+      this.$store.dispatch("LogOut").then(() => {
+        location.reload(); // In order to re-instantiate the vue-router object to avoid bugs
+      });
+    },
+    getApi() {
+      axios
+        .get("http://202.114.148.160/webapi/api/values")
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    handleClickOutside() {
+      this.$store.dispatch('CloseSideBar', { withoutAnimation: false })
+    }
+    // handleOpen(key, keyPath) {
+    //   console.log(key, keyPath);
+    // },
+    // handleClose(key, keyPath) {
+    //   console.log(key, keyPath);
+    // }
+  }
+};
 </script>
 
-<style scopedSlots>
-    .container{
-        position: fixed;
-        height: 100%;
-        width: 100%;
+<style rel="stylesheet/scss" lang="scss" scoped>
+// @import url('http://202.114.148.160/arcgis_js_api4.7/library/4.7/esri/css/main.css');
+// .container {
+//   position: fixed;
+//   height: 100%;
+//   width: 100%;
+// }
+
+// .header {
+//   background-color: darkkhaki;
+// }
+
+// .aside {
+//   background-color: darkseagreen;
+// }
+
+// .main {
+//   background-color: whitesmoke;
+// }
+
+// .footer {
+//   background-color: sienna;
+// }
+
+@import "src/styles/mixin.scss";
+  .app-wrapper {
+    @include clearfix;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    &.mobile.openSidebar{
+      position: fixed;
+      top: 0;
     }
-
-    .header{
-        background-color: darkkhaki
-    } 
-
-    .aside{
-        background-color:darkseagreen
-    } 
-
-    .main{
-        background-color:whitesmoke
-    }
-
-    .footer{
-        background-color:sienna
-    }
+  }
+  .drawer-bg {
+    background: #000;
+    opacity: 0.3;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 999;
+  }
 </style>

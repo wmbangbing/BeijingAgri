@@ -1,54 +1,90 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-
 Vue.use(Router)
 
+/* Layout */
+import Layout from '../views/layout/Layout'
+
+
 export const constantRouterMap = [
-  // {
-  //   path: '/redirect',
-  //   component:() => import('@/views/layout/Layout'),
-  //   children: [
-  //     {
-  //       path: '/redirect/:path*',
-  //       component: () => import('@/views/redirect/index')
-  //     }
-  //   ]
-  // },
+  { path: '/login', component: () => import('@/views/login/index'), hidden: true },
+  { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true },
+
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
+    path: '/',
+    component: Layout,
+    redirect: '/view/map',
+    // name: 'Map',
+    hidden: true,
+    children: [{
+      path: 'map',
+      component: () => import('@/views/esriMap/index')
+    }]
   },
   {
-    path: '/auth-redirect',
-    component: () => import('@/views/login/authredirect'),
-  },
-  // {
-  //   path: '/404',
-  //   component: () => import('@/views/errorPage/404'),
-  //   hidden: true
-  // },
-  // {
-  //   path: '/401',
-  //   component: () => import('@/views/errorPage/401'),
-  //   hidden: true
-  // },
-  {
-    path: '',
-     component: () => import('@/views/layout/Layout'),
-    redirect: 'main',
+    path: '/view',
+    component: Layout,
+    redirect: '/view/map',
+    name: 'map',
+    meta: { title: '地图', icon: 'map' },
     children: [
       {
-        path: 'main',
-        component:() => import('@/views/layout/Layout'),
-        name: 'main',
-        meta: { title: 'main', icon: 'main', noCache: true }
+        path: 'map',
+        name: 'map',
+        component: () => import('@/views/esriMap/index'),
+        meta: { title: '二维', icon: '2dmap' }
+      },
+      {
+        path: 'scene',
+        name: 'scene',
+        component: () => import('@/views/esriScene/index'),
+        meta: { title: '三维', icon: '3dmap' }
       }
     ]
   },
-  // { path: '/', redirect: '/Login'},
-  // { path: '/Login', component:  () => import('@/views/login/index') },
-  // { path: '', component:  () => import('@/views/layout/Layout') },
+  {
+    path: '/example',
+    component: Layout,
+    redirect: '/example/table',
+    name: 'Example',
+    meta: { title: '例子', icon: 'example' },
+    children: [
+      {
+        path: 'table',
+        name: 'Table',
+        component: () => import('@/views/table/index'),
+        meta: { title: '表格', icon: 'table' }
+      },
+      {
+        path: 'tree',
+        name: 'Tree',
+        component: () => import('@/views/tree/index'),
+        meta: { title: '树状列表', icon: 'tree' }
+      }
+    ]
+  },
+  // {
+  //   path: '/login',
+  //   component: () => import('@/views/login/index'),
+  // },
+  // {
+  //   path: '/auth-redirect',
+  //   component: () => import('@/views/login/authredirect'),
+  // },
+  // {
+  //   path: '',
+  //    component: () => import('@/views/layout/Layout'),
+  //   redirect: 'main',
+  //   children: [
+  //     {
+  //       path: 'main',
+  //       component:() => import('@/views/layout/Layout'),
+  //       name: 'main',
+  //       meta: { title: 'main', icon: 'main', noCache: true }
+  //     }
+  //   ]
+  // },
 ]
 
 export default new Router({
@@ -57,15 +93,15 @@ export default new Router({
   routes: constantRouterMap
 })
 
-export const asyncRouterMap = [
-  {
-    path: '/404',
-    component: () => import('@/views/errorPage/404'),
-    hidden: true
-  },
-  {
-    path: '/401',
-    component: () => import('@/views/errorPage/401'),
-    hidden: true
-  },
-]
+// export const asyncRouterMap = [
+//   {
+//     path: '/404',
+//     component: () => import('@/views/errorPage/404'),
+//     hidden: true
+//   },
+//   {
+//     path: '/401',
+//     component: () => import('@/views/errorPage/401'),
+//     hidden: true
+//   },
+// ]
