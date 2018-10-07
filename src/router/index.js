@@ -14,30 +14,30 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/view/map',
-    name: 'Map',
+    redirect: '/view',
+    name: 'default',
     hidden: true,
-    children: [{
-      path: 'map',
-      component: () => import('@/views/esriMap/index')
-    }]
+    // children: [{
+    //   path: 'map',
+    //   component: () => import('@/views/esriMap/index')
+    // }]
   },
   {
     path: '/view',
     component: Layout,
-    redirect: '/view/map',
+    redirect: '/view/mapview',
     name: 'map',
     meta: { title: '地图', icon: 'map' },
     children: [
       {
-        path: 'map',
-        name: 'map',
+        path: 'mapview',
+        name: 'MapView',
         component: () => import('@/views/esriMap/index'),
         meta: { title: '二维', icon: '2dmap' }
       },
       {
-        path: 'scene',
-        name: 'scene',
+        path: 'sceneview',
+        name: 'SceneView',
         component: () => import('@/views/esriScene/index'),
         meta: { title: '三维', icon: '3dmap' }
       }
