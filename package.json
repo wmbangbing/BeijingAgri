@@ -26,6 +26,8 @@
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-eslint": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0",
     "svg-sprite-loader": "^3.9.2",
     "vue-template-compiler": "^2.5.17"
   },
