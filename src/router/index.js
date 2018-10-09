@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import envParamRouter from './modules/envParam'
+
 Vue.use(Router)
 
 /* Layout */
@@ -64,6 +66,7 @@ export const constantRouterMap = [
       }
     ]
   },
+  envParamRouter
   // {
   //   path: '/login',
   //   component: () => import('@/views/login/index'),
