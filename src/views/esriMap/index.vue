@@ -1,30 +1,31 @@
 <template>
-  <div id="map"></div>
+<div>
+ <div id="map"></div>
+  <!-- <FieldTable visible="false" /> -->
+</div>
+ 
 </template>
 <script>
 import esriLoader from "esri-loader";
+// import FieldTable from '@/components/FieldTable'
+import {createMap} from "./esriMap"
 
 export default  {
-  name: 'twoDMap',
+  name: 'EsriMap',
+  components:{
+    // FieldTable
+  },
   mounted(){
-    const options = {
-      url: 'http://202.114.148.160/arcgis_js_api4.7/library/4.7/dojo/dojo.js'
-    };
-    esriLoader.loadModules(['esri/Map','esri/views/MapView'], options)
-    .then(([Map,MapView]) => {
-      let map = new Map({
-        basemap: 'dark-gray'
-      });
-
-      const view = new MapView({
-        map: map,
-        container: 'map',
-      })
-    })
-    .catch(err => {
-      console.error(err);
-    });
-  }
+    this.initMap();
+  },
+  methods:{
+    initMap(){
+      const options = {
+        url: 'http://202.114.148.160/arcgis_js_api4.7/library/4.7/dojo/dojo.js'
+      };
+      createMap(esriLoader,options)
+    }
+  },
 }
 </script>
 
@@ -34,7 +35,6 @@ export default  {
     min-height: calc(100vh - 50px);
     position: relative;
     overflow: hidden;
-  }
-    
+  }  
 </style>
 
