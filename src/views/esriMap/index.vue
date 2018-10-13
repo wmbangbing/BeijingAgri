@@ -1,19 +1,19 @@
 <template>
 <div>
  <div id="map"></div>
-  <!-- <FieldTable visible="false" /> -->
+  <FieldTable id="table" visible="true" />
 </div>
  
 </template>
 <script>
 import esriLoader from "esri-loader";
-// import FieldTable from '@/components/FieldTable'
+import FieldTable from '@/components/FieldTable'
 import {createMap} from "./esriMap"
 
 export default  {
   name: 'EsriMap',
   components:{
-    // FieldTable
+    FieldTable
   },
   mounted(){
     this.initMap();

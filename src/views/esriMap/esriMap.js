@@ -85,12 +85,12 @@ export const createMap = function (esriLoader, options) {
       title:"农场"  
     });
 
-    let map = new Map({
+    const map = new Map({
       basemap: 'satellite',
       layers:[ncLayer,dkLayer,jcLayer,qxLayer,]
     });
 
-    var view = new MapView({
+    const view = new MapView({
       map: map,
       container: 'map',
       zoom:18,
@@ -98,26 +98,26 @@ export const createMap = function (esriLoader, options) {
     });
 
     
-    var layerList = new LayerList({
+    const layerList = new LayerList({
       view: view,
       listItemCreatedFunction:function(event){
         var item = event.item;
         item.actionsSections = [
           [{
-            title: "Go to full extent",
+            title: "缩放到图层",
             className: "esri-icon-zoom-out-fixed",
             id: "full-extent"
           }, {
-            title: "Layer information",
+            title: "图层信息",
             className: "esri-icon-description",
             id: "information"
           }],
           [{
-            title: "Increase opacity",
+            title: "提升可见度",
             className: "esri-icon-up",
             id: "increase-opacity"
           }, {
-            title: "Decrease opacity",
+            title: "降低可见度",
             className: "esri-icon-down",
             id: "decrease-opacity"
           }]
@@ -125,7 +125,7 @@ export const createMap = function (esriLoader, options) {
       }
     });
     
-    var exp = new Expand({
+    const exp = new Expand({
       view: view,
       content: layerList
     })
@@ -150,27 +150,43 @@ export const createMap = function (esriLoader, options) {
         }
       });
     })
-    view.ui.add(exp, "top-right");
 
-    var basemapGallery = new BasemapGallery({
+    const basemapGallery = new BasemapGallery({
       view: view,
       container: document.createElement("div"),
       source: basemaps
     });
 
-    var bgExpand = new Expand({
+    const bgExpand = new Expand({
       view: view,
       content: basemapGallery.container,
       expandIconClass: "esri-icon-basemap"
     });
 
-    var homeWidget = new Home({
+    const homeWidget = new Home({
       view: view
     });
 
-    view.ui.add(bgExpand, "top-right");
-    view.ui.add(homeWidget, "top-left");
-    })
+    view.ui.add([
+      {
+        component: exp,
+        position: "top-right",
+        index: 0
+      },{
+        component: bgExpand,
+        position: "top-right",
+        index: 1
+      },{
+        component: homeWidget,
+        position: "top-left",
+        index: 1
+      },{
+        component: table,
+        position: "bottom-left",
+        index: 0
+      }
+    ]);
+  })
   .catch(err => {
     console.error(err);
   });

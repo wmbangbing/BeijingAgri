@@ -3,7 +3,6 @@
      <el-table
         v-loading="loading"
         :data="tableData"
-        style="width: 100%"
         size="mini"
         height="200"
         class="table">
@@ -46,7 +45,7 @@ export default {
 </script>
 <style>
 .FieldTable{
-  position: absolute;
-  z-index: 9999
+  /* position: absolute;
+  z-index: 9999 */
 }
 </style>
