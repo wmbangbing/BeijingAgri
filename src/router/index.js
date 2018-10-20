@@ -66,7 +66,22 @@ export const constantRouterMap = [
   //     }
   //   ]
   // },
-  envParamRouter
+  envParamRouter,
+  {
+    path: '/img',
+    component: Layout,
+    redirect: '/img/imgSticth',
+    name: 'Img',
+    meta: { title: '影像', icon: 'map' },
+    children: [
+      {
+        path: 'imgSticth',
+        name: 'ImgSticth',
+        component: () => import('@/views/imgSticth/index'),
+        meta: { title: '影像拼接', icon: 'splice' }
+      }
+    ]
+  },
   // {
   //   path: '/login',
   //   component: () => import('@/views/login/index'),

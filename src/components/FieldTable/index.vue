@@ -1,6 +1,7 @@
-<template v-if="visible">
-  <div class="FieldTable">
+<template >
+  <div class="FieldTable" >
      <el-table
+        v-if="visible"
         v-loading="loading"
         :data="tableData"
         size="mini"
@@ -12,6 +13,7 @@
             </template>
         </el-table-column>
       </el-table>
+      <div><el-button @click="open">测试</el-button></div>
   </div>
 </template>
 <script>
@@ -26,19 +28,22 @@ export default {
     }
   },
   props:[
-    'visible'
+    "visible"
   ],
   created() {
-    this.fetchData()
+    // this.fetchData()
   },
   methods: {
     fetchData() {
       this.loading = true
       getList().then(response => {
-        debugger;
+        // debugger;
         this.tableData = response.data
         this.loading = false
       })
+    },
+    open() {
+      this.$emit('showbox','the msg'); //触发showbox方法，'the msg'为向父组件传递的数据
     }
   },
 }

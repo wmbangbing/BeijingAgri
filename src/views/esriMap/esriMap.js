@@ -1,4 +1,4 @@
-export const createMap = function (esriLoader, options) {
+export const createMap = function (esriLoader, options, self) {
   esriLoader.loadModules(
     [
       'esri/Map',
@@ -10,8 +10,11 @@ export const createMap = function (esriLoader, options) {
       "esri/widgets/Home",
       "esri/widgets/LayerList",
       "esri/widgets/BasemapGallery",
+      "esri/widgets/Legend",
+      "esri/widgets/Compass",
+      "esri/widgets/Print",
       "esri/core/urlUtils",
-    ], options)
+    ])
   .then(
     ([
       Map,
@@ -23,6 +26,9 @@ export const createMap = function (esriLoader, options) {
       Home,
       LayerList,
       BasemapGallery,
+      Legend,
+      Compass,
+      Print,
       urlUtils
     ]) => {
 
@@ -30,6 +36,40 @@ export const createMap = function (esriLoader, options) {
       urlPrefix: "http://202.114.148.160/arcgis_js_api4.7",
       proxyUrl: "http://202.114.148.160/DotNet/proxy.ashx"
     });
+
+    var timeChart = {
+      title: "详细信息",
+      id: "details",
+      image: "/src/icons/svg/2dmap.svg"
+    };
+
+    //
+    var jcLayerTemplate = {
+      title: `监测点编号：{Number}`,
+      // content: [{
+      //   type: "media",
+      //   mediaInfos: [{
+      //       title: "<b>监测点图片</b>",
+      //       type: "image",
+      //       value: {
+      //           // sourceURL: "../Content/Img/MonitPts/"
+      //       }
+      //   }]
+      // }],
+      actions: [timeChart]
+    }; 
+
+    var dkLayerRenderer = {
+      type: "simple",
+      symbol: {
+          type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+          color: "green",
+          outline: {  // autocasts as new SimpleLineSymbol()
+              color: [150, 180, 0, 1],
+              width: "1px"
+          }
+      }
+    };
 
     //地图底图
     const vectorBaselayer = new TileLayer({
@@ -65,9 +105,11 @@ export const createMap = function (esriLoader, options) {
 
     var basemaps = [vectorBasemap, rasterBasemap, grayBasemap];
 
-    var jcLayer = new FeatureLayer({
+    self.jcLayer = new FeatureLayer({
       url:'http://202.114.148.160:8000/arcgis/rest/services/BJ/beijing9_27/MapServer/0',
-      title:"土壤监测点"
+      title:"土壤监测点",
+      outFields:["*"],
+      popupTemplate:jcLayerTemplate,
     });
 
     var qxLayer = new FeatureLayer({
@@ -77,7 +119,8 @@ export const createMap = function (esriLoader, options) {
 
     var dkLayer = new FeatureLayer({
       url:'http://202.114.148.160:8000/arcgis/rest/services/BJ/beijing9_27/MapServer/2',
-      title:"地块"
+      title:"地块",
+      renderer:dkLayerRenderer      
     });
 
     var ncLayer = new FeatureLayer({
@@ -87,7 +130,7 @@ export const createMap = function (esriLoader, options) {
 
     const map = new Map({
       basemap: 'satellite',
-      layers:[ncLayer,dkLayer,jcLayer,qxLayer,]
+      layers:[ncLayer,dkLayer,self.jcLayer,qxLayer,]
     });
 
     const view = new MapView({
@@ -100,35 +143,143 @@ export const createMap = function (esriLoader, options) {
     
     const layerList = new LayerList({
       view: view,
-      listItemCreatedFunction:function(event){
-        var item = event.item;
-        item.actionsSections = [
-          [{
-            title: "缩放到图层",
-            className: "esri-icon-zoom-out-fixed",
-            id: "full-extent"
-          }, {
-            title: "图层信息",
-            className: "esri-icon-description",
-            id: "information"
-          }],
-          [{
-            title: "提升可见度",
-            className: "esri-icon-up",
-            id: "increase-opacity"
-          }, {
-            title: "降低可见度",
-            className: "esri-icon-down",
-            id: "decrease-opacity"
-          }]
-        ];
-      }
+      listItemCreatedFunction:defineActions
     });
+
+    function defineActions(event) {
+      let item = event.item;    
+      
+      switch(item.title){
+        case "土壤监测点":
+          item.actionsSections = [
+            [{
+              title: "缩放到图层",
+              className: "esri-icon-zoom-out-fixed",
+              id: "full-extent"
+            }, {
+              title: "图层信息",
+              className: "esri-icon-description",
+              id: "information"
+            }],
+            [{
+              title: "提高透明度",
+              className: "esri-icon-up",
+              id: "increase-opacity"
+            }, {
+              title: "降低透明度",
+              className: "esri-icon-down",
+              id: "decrease-opacity"
+            }],
+            [{
+              title: "选择过滤",
+              className: "esri-icon-filter",
+              id: "filter"
+            },{             
+              title: "恢复默认选择",
+              className: "esri-icon-rotate",
+              id: "reset"
+            }]        
+          ];
+          break;
+        case "地块":
+          item.actionsSections = [
+            [{
+              title: "缩放到图层",
+              className: "esri-icon-zoom-out-fixed",
+              id: "full-extent"
+            }, {
+              title: "图层信息",
+              className: "esri-icon-description",
+              id: "information"
+            }],
+            [{
+              title: "提高透明度",
+              className: "esri-icon-up",
+              id: "increase-opacity"
+            }, {
+              title: "降低透明度",
+              className: "esri-icon-down",
+              id: "decrease-opacity"
+            }],
+            [{
+              title: "分析图表",
+              className: "esri-icon-table",
+              id: "pivotTable"
+            }],
+            [{
+              title: "默认图",
+              className: "esri-icon-maps",
+              id: "map"
+            },{
+              title: "土壤含水量专题图",
+              className: "esri-icon-maps",
+              id: "waterMap"
+            },{
+              title: "墒情监测专题图",
+              className: "esri-icon-maps",
+              id: "shangqingMap"
+            }]
+          ];
+          break;
+        case "农场":
+          item.actionsSections = [
+            [{
+              title: "缩放到图层",
+              className: "esri-icon-zoom-out-fixed",
+              id: "full-extent"
+            }, {
+              title: "图层信息",
+              className: "esri-icon-description",
+              id: "information"
+            }],
+            [{
+              title: "提高透明度",
+              className: "esri-icon-up",
+              id: "increase-opacity"
+            }, {
+              title: "降低透明度",
+              className: "esri-icon-down",
+              id: "decrease-opacity"
+            }]
+          ];
+          break;
+        case "气象监测点":
+          item.actionsSections = [
+            [{
+              title: "缩放到图层",
+              className: "esri-icon-zoom-out-fixed",
+              id: "full-extent"
+            }, {
+              title: "图层信息",
+              className: "esri-icon-description",
+              id: "information"
+            }],
+            [{
+              title: "提高透明度",
+              className: "esri-icon-up",
+              id: "increase-opacity"
+            }, {
+              title: "降低透明度",
+              className: "esri-icon-down",
+              id: "decrease-opacity"
+            }]
+          ];
+          break;   
+      }
+    };
     
     const exp = new Expand({
       view: view,
       content: layerList
-    })
+    });
+
+    var defaultSym = {
+        type: "simple-fill",
+        outline: { 
+            color: "lightgray",
+            width: 0.5
+        }
+    };
 
     view.when(function(){
       layerList.on("trigger-action", function(event) {
@@ -140,16 +291,93 @@ export const createMap = function (esriLoader, options) {
         } else if (id === "information") {
           window.open(layer.url);
         } else if (id === "increase-opacity") {
-          if (layer.opacity < 1) {
-            layer.opacity += 0.25;
-          }
-        } else if (id === "decrease-opacity") {
           if (layer.opacity > 0) {
             layer.opacity -= 0.25;
           }
-        }
+        } else if (id === "decrease-opacity") {
+          if (layer.opacity < 1) {
+            layer.opacity += 0.25;
+          }
+        }else if (id === "filter"){
+          self.getData();
+        }else if (id === "reset"){
+          layer.definitionExpression = '';
+        }else if (id === "pivotTable"){
+          self.pivottableParam.visible = !self.pivottableParam.visible;
+        }else if (id === "map"){
+          layer.renderer= dkLayerRenderer
+        }else if (id === "waterMap"){
+          layer.renderer = {
+            type: "simple", // autocasts as new SimpleRenderer()
+            symbol: defaultSym,
+            label: "土壤含水量",
+            visualVariables: [{
+              type: "color",
+              field: "Water_cont",
+              //normalizationField: "yield",
+              stops: [
+                {
+                  value: 11,
+                  color: "yellow",
+                  label: "<11"
+                },
+                {
+                  value: 30,
+                  color: "red",
+                  label: ">30"
+                }
+              ]
+            }]
+          };
+
+          // legend.layerInfos = [
+          //   {
+          //       layer: layer,
+          //       title: "土壤含水量"
+          //   }]
+          // view.ui.add(legend, "bottom-right");
+        }else if (id === "shangqingMap"){
+          layer.renderer =  {
+            type: "simple", // autocasts as new SimpleRenderer()
+            symbol: defaultSym,
+            label: "墒情",
+            visualVariables: [{
+              type: "color",
+              field: "shangqing",
+              stops: [
+                {
+                  value: 30,
+                  color: "yellow",
+                  label: "<30"
+                },
+                {
+                  value: 70,
+                  color: "red",
+                  label: ">70"
+                }
+              ]
+            }]
+          };
+
+          // legend.layerInfos = [{
+          //     layer: layer,
+          //     title: "墒情"
+          // }]
+          // view.ui.add(legend, "bottom-right");
+        }      
       });
-    })
+    });
+
+    function showChart(){
+      self.chartParam.visible = !self.chartParam.visible;
+      self.chartParam.field = view.popup.selectedFeature.attributes.Number;
+    }
+
+    view.popup.on("trigger-action", function(event) {
+      if (event.action.id === "details") {
+        showChart()
+      }
+    });
 
     const basemapGallery = new BasemapGallery({
       view: view,
@@ -167,6 +395,22 @@ export const createMap = function (esriLoader, options) {
       view: view
     });
 
+    const compass = new Compass({
+      view: view
+    })
+
+    const print = new Print({
+      view: view,
+      printServiceUrl:"http://202.114.148.160:8000/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+      container: document.createElement("div")  
+    })
+
+    const printExpand = new Expand({
+      view: view,
+      content: print.container,
+      expandIconClass: "esri-icon-printer"
+    })
+
     view.ui.add([
       {
         component: exp,
@@ -176,15 +420,26 @@ export const createMap = function (esriLoader, options) {
         component: bgExpand,
         position: "top-right",
         index: 1
-      },{
+      },
+      {
+        component: printExpand,
+        position: "top-right",
+        index: 2
+      },
+      {
         component: homeWidget,
         position: "top-left",
         index: 1
       },{
-        component: table,
-        position: "bottom-left",
-        index: 0
-      }
+        component: compass,
+        position: "top-left",
+        index: 2
+      },
+      // {
+      //   component: table,
+      //   position: "bottom-left",
+      //   index: 0
+      // }
     ]);
   })
   .catch(err => {
