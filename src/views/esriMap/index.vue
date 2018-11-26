@@ -4,7 +4,8 @@
   <!-- <FieldTable id="table" :visible=fieldTableVisible  /> -->
   <SelectDialog @returnId="getSelectedId" :selectDialogParam=selectDialogParam   />
   <ChartDialog  :chartParam=chartParam />
-  <pivottableDialog :pivottableParam=pivottableParam  />
+  <PivottableDialog :pivottableParam=pivottableParam  />
+  <FieldTableDialog :fieldTableParam=fieldTableParam />
 </div>
  
 </template>
@@ -13,9 +14,10 @@ import esriLoader from "esri-loader";
 import FieldTable from '@/components/FieldTable'
 import SelectDialog from '@/components/SelectDialog' 
 import ChartDialog from '@/components/ChartDialog' 
-import pivottableDialog from '@/components/pivottableDialog' 
+import PivottableDialog from '@/components/PivottableDialog' 
+import FieldTableDialog from '@/components/FieldTableDialog' 
 import {createMap} from "./esriMap"
-import { getList } from '@/api/table'
+import { getMPData } from '@/api/MonitoringPoint'
 import { unique } from '@/utils/filterData'
 
 
@@ -33,7 +35,12 @@ export default  {
         field:null        
       },
       pivottableParam:{
-        visible:false
+        visible:false,
+        id:""
+      },
+      fieldTableParam:{
+        visible:false,
+        id:""
       },
       dialogFormVisible:false,
       selectId:[],
@@ -44,7 +51,8 @@ export default  {
     FieldTable,
     SelectDialog,
     ChartDialog,
-    pivottableDialog
+    PivottableDialog,
+    FieldTableDialog
   },
   mounted(){    
     var self = this;
@@ -53,8 +61,8 @@ export default  {
   methods:{
     initMap(self){
       const options = {
-        // url: 'http://202.114.148.160/arcgis_js_api4.7/library/4.7/dojo/dojo.js',
-        url:'https://js.arcgis.com/4.9/'
+        url: 'http://202.114.148.160/arcgis_js_api4.8/library/4.8/dojo/dojo.js',
+        // url:'https://js.arcgis.com/4.9/'
       };
       createMap(esriLoader,options,self)
     },
@@ -71,7 +79,7 @@ export default  {
     },
     getData(){
       var self = this;
-      getList().then(response => {
+      getMPData().then(response => {
         var filterData = unique(response.data);
         self.selectDialogParam.data = filterData;
         self.selectDialogParam.visible = !self.selectDialogParam.visible;
@@ -82,8 +90,8 @@ export default  {
 </script>
 
 <style scoped>
-  /* @import url('http://202.114.148.160/arcgis_js_api4.8/library/4.8/esri/css/main.css'); */
-  @import url('https://js.arcgis.com/4.9/esri/css/main.css');
+  @import url('http://202.114.148.160/arcgis_js_api4.8/library/4.8/esri/css/main.css');
+  /* @import url('https://js.arcgis.com/4.9/esri/css/main.css'); */
   #map{
     min-height: calc(100vh - 50px);
     position: relative;

@@ -68,17 +68,25 @@ export const constantRouterMap = [
   // },
   envParamRouter,
   {
-    path: '/img',
-    component: Layout,
-    redirect: '/img/imgSticth',
-    name: 'Img',
-    meta: { title: '影像', icon: 'map' },
-    children: [
+    // path: '/img',
+    // component: Layout,
+    // redirect: '/img/imgSticth',
+    // name: 'Img',
+    // meta: { title: '影像', icon: 'map' },
+    // children: [
+    //   {
+    //     path: 'imgSticth',
+    //     name: 'ImgSticth',
+    //     component: () => import('@/views/imgSticth/index'),
+    //     meta: { title: '影像拼接', icon: 'splice' }
+    //   }
+    // ]
+    "path": "imgSticth",
+    "component": Layout,
+    "children": [
       {
-        path: 'imgSticth',
-        name: 'ImgSticth',
-        component: () => import('@/views/imgSticth/index'),
-        meta: { title: '影像拼接', icon: 'splice' }
+        "path": "http://202.114.148.160/qctest/addimage/#/imgSticth",
+        "meta": { "title": "影像拼接", "icon": "splice" }
       }
     ]
   },

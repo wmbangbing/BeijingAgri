@@ -43,6 +43,7 @@
         axios.get('http://202.114.148.160/webapi/api/img/GetPicture')
         .then(function (response) { 
           debugger;
+          console.log(imgP)
           mergedImg.src = imgP;
         })
         .catch(function (error) {

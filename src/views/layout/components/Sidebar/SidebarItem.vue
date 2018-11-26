@@ -64,7 +64,6 @@ export default {
   },
   methods: {
     hasOneShowingChild(children, parent) {
-      console.log("asd");
       const showingChildren = children.filter(item => {
         
         if (item.hidden) {

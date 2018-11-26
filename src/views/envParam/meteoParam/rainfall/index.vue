@@ -28,14 +28,14 @@ export default {
       const xData = (function() {
         const data = []
         for (let i = 1; i < 13; i++) {
-          data.push(i + 'month')
+          data.push(i + '月')
         }
         return data
       }())
       this.chart.setOption({
         backgroundColor: '#344b58',
         title: {
-          text: 'statistics',
+          text: '降雨量',
           x: '20',
           top: '20',
           textStyle: {
@@ -69,7 +69,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['female', 'male', 'average']
+          data: ['降雨量', '降雨量']
         },
         calculable: true,
         xAxis: [{
@@ -140,45 +140,10 @@ export default {
           start: 1,
           end: 35
         }],
-        series: [{
-          name: 'female',
-          type: 'bar',
-          stack: 'total',
-          barMaxWidth: 35,
-          barGap: '10%',
-          itemStyle: {
-            normal: {
-              color: 'rgba(255,144,128,1)',
-              label: {
-                show: true,
-                textStyle: {
-                  color: '#fff'
-                },
-                position: 'insideTop',
-                formatter(p) {
-                  return p.value > 0 ? p.value : ''
-                }
-              }
-            }
-          },
-          data: [
-            709,
-            1917,
-            2455,
-            2610,
-            1719,
-            1433,
-            1544,
-            3285,
-            5208,
-            3372,
-            2484,
-            4078
-          ]
-        },
+        series: [
 
         {
-          name: 'male',
+          name: '降雨量',
           type: 'bar',
           stack: 'total',
           itemStyle: {
@@ -194,22 +159,9 @@ export default {
               }
             }
           },
-          data: [
-            327,
-            1776,
-            507,
-            1200,
-            800,
-            482,
-            204,
-            1390,
-            1001,
-            951,
-            381,
-            220
-          ]
+          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
         }, {
-          name: 'average',
+          name: '降雨量',
           type: 'line',
           stack: 'total',
           symbolSize: 10,
@@ -227,20 +179,7 @@ export default {
               }
             }
           },
-          data: [
-            1036,
-            3693,
-            2962,
-            3810,
-            2519,
-            1915,
-            1748,
-            4675,
-            6209,
-            4323,
-            2865,
-            4298
-          ]
+          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
         }
         ]
       })

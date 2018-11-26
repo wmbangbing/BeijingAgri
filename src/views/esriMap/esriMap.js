@@ -14,7 +14,7 @@ export const createMap = function (esriLoader, options, self) {
       "esri/widgets/Compass",
       "esri/widgets/Print",
       "esri/core/urlUtils",
-    ])
+    ],options)
   .then(
     ([
       Map,
@@ -40,23 +40,58 @@ export const createMap = function (esriLoader, options, self) {
     var timeChart = {
       title: "详细信息",
       id: "details",
-      image: "/src/icons/svg/2dmap.svg"
+      image: require('@/assets//401_images/401.gif')
     };
 
     //
     var jcLayerTemplate = {
       title: `监测点编号：{Number}`,
-      // content: [{
-      //   type: "media",
-      //   mediaInfos: [{
-      //       title: "<b>监测点图片</b>",
-      //       type: "image",
-      //       value: {
-      //           // sourceURL: "../Content/Img/MonitPts/"
-      //       }
-      //   }]
-      // }],
+      content: [{
+        type: "media",
+        mediaInfos: [{
+          title: "<b>监测点图片</b>",
+          type: "image",
+          value: {
+            // sourceURL: '../src/assets/jcImg/{Id}'+
+            sourceURL: require(`@/assets/jcImg/1001.jpg`)
+          }
+        }]
+        },{
+        type: "fields",
+        fieldInfos: [{
+            fieldName: "person"
+        }, {
+            fieldName: "lon",
+        }, {
+            fieldName: "lat"
+        }]
+      }],
       actions: [timeChart]
+    }; 
+
+    var dkLayerTemplate = {
+      title: `地块编号：{DK_ID}`,
+      content: [{
+        type: "media",
+        mediaInfos: [{
+          title: "<b>地块图片</b>",
+          type: "image",
+          value: {
+            // sourceURL: '../src/assets/jcImg/{Id}'+
+            sourceURL: require(`@/assets/dkImg/水稻实验田.jpg`)
+            // sourceURL:`img/dkImg/水稻实验田.jpg`
+          }
+        }]
+        },{
+        type: "fields",
+        fieldInfos: [{
+            fieldName: "DK_name"
+        }, {
+            fieldName: "DK_area",
+        }, {
+            fieldName: "soil_grade"
+        }]
+      }]
     }; 
 
     var dkLayerRenderer = {
@@ -67,7 +102,7 @@ export const createMap = function (esriLoader, options, self) {
           outline: {  // autocasts as new SimpleLineSymbol()
               color: [150, 180, 0, 1],
               width: "1px"
-          }
+        }
       }
     };
 
@@ -120,7 +155,8 @@ export const createMap = function (esriLoader, options, self) {
     var dkLayer = new FeatureLayer({
       url:'http://202.114.148.160:8000/arcgis/rest/services/BJ/beijing9_27/MapServer/2',
       title:"地块",
-      renderer:dkLayerRenderer      
+      renderer:dkLayerRenderer,
+      popupTemplate:dkLayerTemplate   
     });
 
     var ncLayer = new FeatureLayer({
@@ -171,6 +207,15 @@ export const createMap = function (esriLoader, options, self) {
               id: "decrease-opacity"
             }],
             [{
+              title: "属性列表",
+              className: "esri-icon-table",
+              id: "fieldTableJC"
+            },{
+              title: "分析图表",
+              className: "esri-icon-table",
+              id: "pivotTableJC"
+            }],
+            [{
               title: "选择过滤",
               className: "esri-icon-filter",
               id: "filter"
@@ -202,9 +247,13 @@ export const createMap = function (esriLoader, options, self) {
               id: "decrease-opacity"
             }],
             [{
+              title: "属性列表",
+              className: "esri-icon-table",
+              id: "fieldTableDK"
+            },{
               title: "分析图表",
               className: "esri-icon-table",
-              id: "pivotTable"
+              id: "pivotTableDK"
             }],
             [{
               title: "默认图",
@@ -302,8 +351,12 @@ export const createMap = function (esriLoader, options, self) {
           self.getData();
         }else if (id === "reset"){
           layer.definitionExpression = '';
-        }else if (id === "pivotTable"){
+        }else if (id === "pivotTableJC"){
           self.pivottableParam.visible = !self.pivottableParam.visible;
+          self.pivottableParam.id = "pivotTableJC";
+        }else if (id === "pivotTableDK"){
+          self.pivottableParam.visible = !self.pivottableParam.visible;
+          self.pivottableParam.id = "pivotTableDK";          
         }else if (id === "map"){
           layer.renderer= dkLayerRenderer
         }else if (id === "waterMap"){
@@ -364,7 +417,13 @@ export const createMap = function (esriLoader, options, self) {
           //     title: "墒情"
           // }]
           // view.ui.add(legend, "bottom-right");
-        }      
+        }else if(id === "fieldTableDK"){
+          self.fieldTableParam.visible = !self.fieldTableParam.visible;
+          self.fieldTableParam.id = "fieldTableDK";
+        }else if(id === "fieldTableJC"){
+          self.fieldTableParam.visible = !self.fieldTableParam.visible;
+          self.fieldTableParam.id = "fieldTableJC";
+        }            
       });
     });
 
@@ -411,13 +470,22 @@ export const createMap = function (esriLoader, options, self) {
       expandIconClass: "esri-icon-printer"
     })
 
+    const legend = new Legend({
+      view: view,
+      // label:"test",
+      layerInfos: [{
+        layer: dkLayer,
+        title: `图例：${dkLayer.title}图层`
+      }]
+    })
+
     view.ui.add([
       {
-        component: exp,
-        position: "top-right",
-        index: 0
-      },{
         component: bgExpand,
+        position: "top-right",
+        index:0
+      },{
+        component: exp,
         position: "top-right",
         index: 1
       },
@@ -434,7 +502,11 @@ export const createMap = function (esriLoader, options, self) {
         component: compass,
         position: "top-left",
         index: 2
-      },
+      },{
+        component: legend,
+        position: "bottom-right",
+        index: 0
+      }
       // {
       //   component: table,
       //   position: "bottom-left",
